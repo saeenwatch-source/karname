@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سامانه جامع رصد و کارنامه پایگاه‌ها</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*{box-sizing:border-box;font-family:'Vazirmatn',Tahoma,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#eef2f6;margin:0;padding:8px;color:#1e293b}
+
+/* نوار وضعیت بازدیدکننده و دکمه ورود مدیر */
+.top-bar{display:flex;justify-content:space-between;align-items:center;background:#0f172a;color:#fff;padding:8px 12px;border-radius:10px;margin-bottom:8px;font-size:12px}
+.admin-badge{background:#dc2626;color:#fff;padding:3px 8px;border-radius:6px;font-weight:bold;font-size:11px}
+.viewer-badge{background:#0284c7;color:#fff;padding:3px 8px;border-radius:6px;font-weight:bold;font-size:11px}
+.btn-lock{background:#dfbe73;color:#0f172a;border:none;padding:5px 12px;border-radius:6px;font-weight:900;font-size:12px;cursor:pointer}
+
+.nav-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#162a4a;padding:6px;border-radius:12px;margin-bottom:12px;position:sticky;top:4px;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.tab-btn{background:transparent;color:#cbd5e1;border:none;padding:10px 4px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;transition:0.2s}
+.tab-btn.active{background:#dfbe73;color:#0d1b30;box-shadow:0 2px 6px rgba(0,0,0,0.25)}
+.tab-page{display:none}
+.tab-page.active{display:block}
+
+/* مخفی کردن پنل ویرایش برای بازدیدکنندگان عادی */
+.admin-only{display:none}
+body.is-admin .admin-only{display:block}
+
+.box{background:#fff;padding:12px;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.title{font-weight:900;color:#162a4a;border-bottom:2px solid #c9ad6a;padding-bottom:6px;margin-bottom:10px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.row input,.row select{flex:1;padding:8px;border:1px solid #cbd5e1;border-radius:8px;text-align:center;font-weight:bold;width:100%;font-size:13px;background:#fff}
+.card{background:#f8fafc;border:1px solid #e2e8f0;border-right:4px solid #162a4a;border-radius:8px;padding:8px;margin-bottom:8px}
+.card-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px}
+.card-top input{flex:1;padding:6px;font-weight:bold;border:1px solid #cbd5e1;border-radius:6px;color:#162a4a}
+.score-badge{background:#162a4a;color:#dfbe73;padding:4px 8px;border-radius:6px;font-size:12px;font-weight:bold;white-space:nowrap}
+.btn-del{background:#fee2e2;color:#b91c1c;border:none;border-radius:6px;padding:5px 9px;font-weight:bold;cursor:pointer}
+.inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.inputs div{text-align:center;background:#fff;padding:4px;border:1px solid #e2e8f0;border-radius:6px}
+.inputs label{display:block;font-size:10px;color:#64748b;font-weight:bold}
+.inputs input{width:100%;border:none;border-bottom:2px solid #cbd5e1;text-align:center;font-weight:900;font-size:15px;outline:none}
+.btn{width:100%;padding:10px;border:none;border-radius:8px;font-weight:800;cursor:pointer;margin-top:6px;font-size:13px}
+.btn-dl{background:linear-gradient(90deg,#15803d,#16a34a);color:#fff;font-size:14px;padding:12px}
+.btn-bk{background:#0284c7;color:#fff}
+.btn-rs{background:#d97706;color:#fff}
+.btn-archive{background:#4f46e5;color:#fff}
+.btn-cloud{background:linear-gradient(90deg,#7c3aed,#9333ea);color:#fff;font-size:14px}
+.btn-add{background:#e2e8f0;color:#1e293b}
+
+.preview-wrap{overflow-x:auto;background:#0d1b30;padding:8px;border-radius:10px}
+#report-card,#single-report-card{width:1150px;min-width:1150px;background:radial-gradient(circle,#1b355c,#0d1b30);padding:18px;color:#fff}
+.frame{border:2px solid #c9ad6a;border-radius:8px;padding:15px 22px;background:rgba(16,33,60,.92);position:relative}
+.rep-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.logo-box{width:85px;height:85px;display:flex;align-items:center;justify-content:center;border:1px dashed #c9ad6a;border-radius:6px;font-size:11px;color:#c9ad6a;text-align:center}
+.logo-box img{max-width:80px;max-height:80px;object-fit:contain}
+.rep-center{text-align:center;flex:1}
+.rep-center h1{color:#dfbe73;margin:0;font-size:26px;font-weight:900}
+.rep-center p{margin:4px 0;color:#fff;font-size:15px}
+.dates-box{background:#fff;color:#000;border-radius:20px;padding:4px 20px;display:flex;justify-content:space-around;font-weight:800;margin:8px auto;width:75%;font-size:15px}
+table{width:100%;border-collapse:collapse;background:#fff;color:#111;border-radius:6px;overflow:hidden;border:2px solid #c9ad6a}
+th{background:linear-gradient(180deg,#d8be7f,#b89852);padding:7px;border:1px solid #6b582f;font-size:14px;font-weight:900}
+td{padding:6px;border:1px solid #777;text-align:center;font-weight:800;font-size:15px}
+tr:nth-child(even){background:#f1f5f9}
+.status{display:inline-block;padding:3px 10px;border-radius:12px;color:#fff;font-size:12px;font-weight:800}
+.st-good{background:#15803d}.st-mid{background:#b45309}.st-bad{background:#b91c1c}
+.bar-box{display:flex;align-items:center;justify-content:center;gap:6px;direction:ltr}
+.bar{width:50px;height:10px;background:#ddd;border-radius:2px;overflow:hidden}
+.fill{height:100%}
+
+.trend-banner{padding:12px;border-radius:10px;color:#fff;font-weight:900;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tb-up{background:linear-gradient(90deg,#15803d,#22c55e)}
+.tb-down{background:linear-gradient(90deg,#991b1b,#ef4444)}
+.tb-flat{background:linear-gradient(90deg,#1e3a8a,#3b82f6)}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi-card{background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:10px;text-align:center}
+.kpi-title{font-size:11px;color:#475569;font-weight:800;margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:900;color:#0f172a}
+.kpi-delta{font-size:12px;font-weight:800;margin-top:4px;display:inline-block;padding:2px 8px;border-radius:10px}
+.d-up{background:#dcfce7;color:#15803d}
+.d-down{background:#fee2e2;color:#b91c1c}
+.d-same{background:#e2e8f0;color:#475569}
+
+.factor-row{margin-bottom:10px}
+.factor-head{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:4px}
+.factor-track{width:100%;height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden}
+.factor-fill{height:100%;border-radius:6px}
+.smart-advice{background:#fffbeb;border:1px solid #f59e0b;border-right:5px solid #d97706;padding:10px;border-radius:8px;font-size:12.5px;line-height:1.8;color:#78350f;font-weight:700;margin-bottom:12px}
+.chart-box{background:#0f172a;padding:12px;border-radius:10px;color:#fff;margin-bottom:12px;text-align:center}
+
+#imgModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:9999;padding:15px;overflow-y:auto;text-align:center;color:#fff}
+.modal-guide{background:#1e293b;border:1px solid #c9ad6a;color:#fde047;padding:10px;border-radius:8px;font-size:13px;font-weight:bold;margin-bottom:10px;line-height:1.7}
+#finalImg{max-width:100%;border:2px solid #c9ad6a;border-radius:6px;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<!-- نوار وضعیت بالا (مشخص‌کننده حالت بازدیدکننده یا مدیر) -->
+<div class="top-bar">
+  <div>
+    وضعیت دسترسی: <span id="modeBadge" class="viewer-badge">👁 حالت مشاهده (فقط خواندنی)</span>
+  </div>
+  <button class="btn-lock" id="authBtn" onclick="toggleAdminAuth()">🔐 ورود مدیر</button>
+</div>
+
+<div id="imgModal">
+  <div class="modal-guide">
+    ✅ عکس کارنامه آماده شد!<br>
+    ۱. انگشت خود را روی عکس زیر نگه دارید و گزینه <b>«ذخیره تصویر / Save Image»</b> را بزنید.<br>
+    ۲. یا دکمه آبی زیر را برای ارسال و ذخیره در گالری لمس کنید.
+  </div>
+  <img id="finalImg" src="" alt="کارنامه نهایی">
+  <div class="row">
+    <button class="btn btn-bk" onclick="shareImg()">📤 اشتراک‌گذاری / ذخیره در گوشی</button>
+    <button class="btn btn-del" style="flex:0.4;font-size:14px" onclick="document.getElementById('imgModal').style.display='none'">بستن ✕</button>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('tab-main',this)">📊 کارنامه هفتگی</button>
+  <button class="tab-btn" onclick="switchTab('tab-single',this)">🔍 روند هر پایگاه</button>
+  <button class="tab-btn" onclick="switchTab('tab-compare',this)">📈 مقایسه کل</button>
+</div>
+
+<!-- تب ۱: کارنامه هفتگی -->
+<div id="tab-main" class="tab-page active">
+
+  <!-- انتخاب هفته برای بازدیدکنندگان عادی -->
+  <div class="box">
+    <div class="title">
+      <span>انتخاب هفته جهت مشاهده کارنامه</span>
+      <span id="archiveCountBadge" style="font-size:11px;background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:10px"></span>
+    </div>
+    <div class="row">
+      <select id="historySelect" onchange="loadWeekFromHistory(this.value)"></select>
+      <button class="btn-del admin-only" onclick="deleteSelectedHistory()" title="حذف این هفته از تاریخچه">🗑</button>
+    </div>
+    <button class="btn btn-dl" id="dlBtn" onclick="makeImg('report-card','dlBtn')">📸 دریافت عکس کارنامه این هفته</button>
+  </div>
+
+  <!-- پنل مخصوص مدیر (مخفی برای سایر افراد) -->
+  <div class="admin-only">
+    <div class="box" style="border:2px solid #7c3aed">
+      <div class="title" style="color:#7c3aed">☁️ انتشار و اشتراک‌گذاری آنلاین برای سایرین (مخصوص مدیر)</div>
+      <p style="font-size:11.5px;margin:0 0 8px 0;color:#475569;line-height:1.6">
+        با زدن دکمه زیر، تمام آمارها و هفته‌هایی که وارد کرده‌اید در یک لینک اینترنتی «فقط خواندنی» ذخیره می‌شود تا برای دیگران بفرستید:
+      </p>
+      <button class="btn btn-cloud" id="cloudBtn" onclick="publishToCloud()">🚀 ساخت لینک «فقط مشاهده» از آخرین آمار</button>
+      <div class="row" style="margin-top:8px">
+        <button class="btn btn-bk" onclick="exportBackup()">💾 کپی پشتیبان کل</button>
+        <button class="btn btn-rs" onclick="importBackup()">📂 بازگردانی</button>
+      </div>
+      <button class="btn btn-archive" onclick="saveCurrentWeekToHistory()">📌 ثبت و ذخیره آمار این هفته در تاریخچه روند</button>
+    </div>
+
+    <div class="box">
+      <div class="title">۱. تنظیمات تاریخ و لوگو (پنل مدیر)</div>
+      <div class="row">
+        <input type="text" id="startD" value="۱۴۰۵/۰۷/۱۱" placeholder="تاریخ شروع" oninput="saveAll()">
+        <input type="text" id="endD" value="۱۴۰۵/۰۷/۱۷" placeholder="تاریخ پایان" oninput="saveAll()">
+      </div>
+      <div class="row" style="font-size:11px">
+        <div>لوگوی راست: <input type="file" accept="image/*" onchange="upLogo(event,'rLogo')"></div>
+        <div>لوگوی چپ: <input type="file" accept="image/*" onchange="upLogo(event,'lLogo')"></div>
+      </div>
+      <div class="row" style="font-size:12px;font-weight:bold;color:#162a4a">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="showDeltaChk" checked onchange="run()" style="width:18px;height:18px">
+          نمایش میزان رشد/افت نسبت به هفته قبل در جدول کارنامه
+        </label>
+      </div>
+
+      <div class="title">
+        <span>۲. ویرایش آمار پایگاه‌ها</span>
+        <button onclick="resetWeekZeros()" style="background:#fee2e2;color:#991b1b;border:none;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:bold">صفر کردن پست/بازدید</button>
+      </div>
+      <div id="list"></div>
+      <button class="btn btn-add" onclick="addRow()">+ افزودن پایگاه جدید</button>
+    </div>
+  </div>
+
+  <!-- جدول کارنامه (قابل مشاهده برای همه) -->
+  <div class="preview-wrap">
+    <div id="report-card">
+      <div class="frame">
+        <div class="rep-header">
+          <div class="logo-box" id="rBox">لوگوی راست</div>
+          <div class="rep-center">
+            <h1>جدول جامع رده‌بندی پایگاه‌های تابعه</h1>
+            <p id="subTitle"></p>
+            <div class="dates-box">
+              <span>تاریخ شروع نظارت: <span id="vStart"></span></span>
+              <span>تاریخ پایان نظارت: <span id="vEnd"></span></span>
+            </div>
+          </div>
+          <div class="logo-box" id="lBox">لوگوی چپ</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>نام پایگاه</th>
+              <th>❐ تعداد پست</th>
+              <th>👁 میانگین بازدید</th>
+              <th>👥 اعضا</th>
+              <th>نمره عملکرد</th>
+              <th>وضعیت</th>
+              <th>رتبه</th>
+            </tr>
+          </thead>
+          <tbody id="tbl"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- تب ۲: روند اختصاصی هر پایگاه -->
+<div id="tab-single" class="tab-page">
+  <div class="box">
+    <div class="title">انتخاب پایگاه جهت بررسی تخصصی روند</div>
+    <div class="row">
+      <select id="baseSelector" onchange="renderSingleBaseAnalysis()" style="font-size:15px;padding:10px;border:2px solid #162a4a;color:#162a4a"></select>
+    </div>
+    <div id="singleTrendBanner" class="trend-banner tb-flat"></div>
+    <div id="smartAdviceBox" class="smart-advice"></div>
+    <div class="title">مقایسه ریزبه‌ریز شاخص‌ها (نسبت به هفته قبل)</div>
+    <div id="singleKpiGrid" class="kpi-grid"></div>
+    <div class="title">کالبدشکافی دقیق امتیازات کسب‌شده (از ۱۰۰ امتیاز)</div>
+    <div id="singleFactorsBox"></div>
+    <div class="title">
+      <span>نمودار روند تغییرات در طول هفته‌ها</span>
+      <select id="chartMetricSel" onchange="renderSingleBaseAnalysis()" style="width:130px;padding:3px;font-size:11px;border-radius:5px">
+        <option value="sc">نمره عملکرد</option>
+        <option value="p">تعداد پست</option>
+        <option value="v">میانگین بازدید</option>
+        <option value="m">تعداد اعضا</option>
+        <option value="ratio">نسبت بازدید به اعضا (%)</option>
+      </select>
+    </div>
+    <div class="chart-box" id="svgChartContainer"></div>
+    <div class="title">جدول تاریخچه عملکرد هفته‌به‌هفته این پایگاه</div>
+    <div style="overflow-x:auto">
+      <table style="font-size:12px">
+        <thead>
+          <tr>
+            <th>بازه زمانی هفته</th>
+            <th>پست</th>
+            <th>بازدید</th>
+            <th>اعضا</th>
+            <th>نسبت تعامل</th>
+            <th>نمره</th>
+            <th>رتبه</th>
+            <th>تغییر نمره</th>
+          </tr>
+        </thead>
+        <tbody id="singleHistoryTbl"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-dl" id="dlSingleBtn" onclick="makeImg('single-report-card','dlSingleBtn')" style="margin-top:14px">📸 دانلود کارنامه تحلیلی اختصاصی این پایگاه</button>
+  </div>
+
+  <div class="preview-wrap">
+    <div id="single-report-card">
+      <div class="frame" id="singleCardFrame"></div>
+    </div>
+  </div>
+</div>
+
+<!-- تب ۳: مقایسه کل -->
+<div id="tab-compare" class="tab-page">
+  <div class="box">
+    <div class="title">خلاصه تحولات هفته (مقایسه با هفته قبل)</div>
+    <div id="overallHighlights" class="kpi-grid"></div>
+    <div class="title">جدول مقایسه‌ای رشد و افت تمامی پایگاه‌ها (روی نام هر پایگاه بزنید)</div>
+    <div style="overflow-x:auto">
+      <table style="font-size:12px">
+        <thead>
+          <tr>
+            <th>نام پایگاه</th>
+            <th>نمره قبل</th>
+            <th>نمره جدید</th>
+            <th>تغییر نمره</th>
+            <th>تغییر پست</th>
+            <th>تغییر بازدید</th>
+            <th>تغییر اعضا</th>
+            <th>تغییر رتبه</th>
+          </tr>
+        </thead>
+        <tbody id="compareAllTbl"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// 🔐 رمز عبور مدیریت (فقط خودتان این رمز را دارید)
+const ADMIN_PASS = "1234";
+let isAdmin = false;
+
+const week1Data = [
+  {n:"پایگاه سهراب اسماعیلی", p:35, v:78, m:194},
+  {n:"پایگاه صاحب الزمان", p:110, v:40, m:476},
+  {n:"پایگاه ۱۲ ولیعصر", p:24, v:64, m:225},
+  {n:"پایگاه جانبازان", p:35, v:43, m:134},
+  {n:"پایگاه ابوذر", p:0, v:0, m:125},
+  {n:"پایگاه انصارالمهدی", p:7, v:25, m:111},
+  {n:"پایگاه ۱۴ معصوم", p:2, v:44, m:106},
+  {n:"پایگاه امام هادی", p:1, v:50, m:155},
+  {n:"پایگاه اخوان", p:0, v:0, m:83},
+  {n:"پایگاه حضرت علی اصغر", p:0, v:0, m:0},
+  {n:"پایگاه شهدای کردکندی", p:0, v:0, m:0},
+  {n:"پایگاه شهدای سهرین", p:0, v:0, m:0},
+  {n:"پایگاه شهدای ولایت آمادگاه", p:0, v:0, m:0},
+  {n:"پایگاه شهید فروزنده", p:0, v:0, m:0}
+];
+
+const week2Data = [
+  {n:"پایگاه سهراب اسماعیلی", p:114, v:52, m:193},
+  {n:"پایگاه صاحب الزمان", p:88, v:55, m:464},
+  {n:"پایگاه ۱۲ ولیعصر", p:10, v:59, m:212},
+  {n:"پایگاه جانبازان", p:63, v:34, m:132},
+  {n:"پایگاه ابوذر", p:15, v:30, m:133},
+  {n:"پایگاه انصارالمهدی", p:29, v:15, m:143},
+  {n:"پایگاه ۱۴ معصوم", p:0, v:0, m:83},
+  {n:"پایگاه امام هادی", p:0, v:0, m:0},
+  {n:"پایگاه اخوان", p:0, v:0, m:0},
+  {n:"پایگاه حضرت علی اصغر", p:0, v:0, m:0},
+  {n:"پایگاه شهدای کردکندی", p:0, v:0, m:0},
+  {n:"پایگاه شهدای سهرین", p:0, v:0, m:0},
+  {n:"پایگاه شهدای ولایت آمادگاه", p:0, v:0, m:0},
+  {n:"پایگاه شهید فروزنده", p:0, v:0, m:0}
+];
+
+let state = {
+  start: "۱۴۰۵/۰۷/۱۱",
+  end: "۱۴۰۵/۰۷/۱۷",
+  rLogo: "",
+  lLogo: "",
+  list: JSON.parse(JSON.stringify(week2Data)),
+  history: [
+    { id: 1, start: "۱۴۰۵/۰۷/۰۴", end: "۱۴۰۵/۰۷/۱۰", list: JSON.parse(JSON.stringify(week1Data)) },
+    { id: 2, start: "۱۴۰۵/۰۷/۱۱", end: "۱۴۰۵/۰۷/۱۷", list: JSON.parse(JSON.stringify(week2Data)) }
+  ]
+};
+
+let lastCanvas = null;
+
+// مدیریت ورود و خروج ادمین با رمز عبور
+function toggleAdminAuth(){
+  if(isAdmin){
+    isAdmin = false;
+    document.body.classList.remove('is-admin');
+    document.getElementById('modeBadge').className = 'viewer-badge';
+    document.getElementById('modeBadge').innerText = '👁 حالت مشاهده (فقط خواندنی)';
+    document.getElementById('authBtn').innerText = '🔐 ورود مدیر';
+  } else {
+    let pass = prompt("لطفاً رمز عبور مدیریت را وارد کنید:");
+    if(pass === ADMIN_PASS){
+      isAdmin = true;
+      document.body.classList.add('is-admin');
+      document.getElementById('modeBadge').className = 'admin-badge';
+      document.getElementById('modeBadge').innerText = '🛠 حالت مدیر (دسترسی ویرایش فعال)';
+      document.getElementById('authBtn').innerText = '🔒 قفل کردن پنل';
+    } else if(pass !== null) {
+      alert("❌ رمز عبور اشتباه است! شما فقط مجوز مشاهده کارنامه‌ها را دارید.");
+    }
+  }
+}
+
+// انتشار آنلاین داده‌ها در فضای ابری و ساخت لینک فقط خواندنی برای مخاطبان
+async function publishToCloud(){
+  let btn = document.getElementById('cloudBtn');
+  btn.innerText = "⏳ در حال ایجاد لینک اینترنتی...";
+  sortHistoryByDate();
+  let payload = { start: state.start, end: state.end, list: state.list, history: state.history };
+  try {
+    let res = await fetch("https://jsonblob.com/api/jsonBlob", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    let loc = res.headers.get("Location") || res.headers.get("location");
+    if(loc){
+      let blobId = loc.split("/").pop();
+      let shareUrl = window.location.origin + window.location.pathname + "?data=" + blobId;
+      btn.innerText = "🚀 ساخت لینک «فقط مشاهده» از آخرین آمار";
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(shareUrl);
+        alert("✅ لینک اینترنتی مخصوص مشاهده ساخته و در کیبورد شما کپی شد!\n\nاین لینک را برای هر کس بفرستید، فقط می‌تواند آمار را ببیند:\n" + shareUrl);
+      } else {
+        prompt("لینک زیر را کپی کرده و برای مخاطبان ارسال کنید:", shareUrl);
+      }
+    } else { throw new Error("خطا در دریافت شناسه"); }
+  } catch(e) {
+    btn.innerText = "🚀 ساخت لینک «فقط مشاهده» از آخرین آمار";
+    alert("⚠️ برای ساخت لینک ابری، اتصال اینترنت خود را بررسی کنید.");
+  }
+}
+
+// بررسی اینکه آیا کاربر از طریق لینک اشتراک‌گذاری وارد شده است
+async function checkCloudUrlParam(){
+  let params = new URLSearchParams(window.location.search);
+  let blobId = params.get("data");
+  if(blobId){
+    try {
+      let res = await fetch("https://jsonblob.com/api/jsonBlob/" + blobId);
+      if(res.ok){
+        let cloudData = await res.json();
+        if(cloudData && cloudData.list){
+          state.start = cloudData.start;
+          state.end = cloudData.end;
+          state.list = cloudData.list;
+          if(cloudData.history) state.history = cloudData.history;
+          sortHistoryByDate();
+          renderInputs();
+          run();
+        }
+      }
+    } catch(e){}
+  }
+}
+
+function dateToNumber(str){
+  if(!str) return 0;
+  let en = String(str)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .trim();
+  let parts = en.split(/[\/\-\.\s]+/).filter(Boolean);
+  if(parts.length >= 3){
+    let y = parseInt(parts[0], 10) || 0;
+    let m = parseInt(parts[1], 10) || 0;
+    let d = parseInt(parts[2], 10) || 0;
+    if(y < 100) y += 1400;
+    return (y * 10000) + (m * 100) + d;
+  }
+  return parseInt(en.replace(/\D/g, ''), 10) || 0;
+}
+
+function sortHistoryByDate(){
+  if(!state.history || !Array.isArray(state.history)) return;
+  state.history.sort((a, b) => {
+    let diffStart = dateToNumber(a.start) - dateToNumber(b.start);
+    if(diffStart !== 0) return diffStart;
+    return dateToNumber(a.end) - dateToNumber(b.end);
+  });
+}
+
+function calcDetails(p,v,m){
+  p=+p||0; v=+v||0; m=+m||0;
+  let sp = Math.min(20, (p/35)*20);
+  let sm = Math.min(30, (m/200)*30);
+  let sv = Math.min(25, (v/100)*25);
+  let ratio = m>0 ? (v/m) : 0;
+  let sr = m>0 ? Math.min(25, (ratio/0.35)*25) : 0;
+  let rawTotal = Math.round(sp+sm+sv+sr);
+  let finalScore = p < 10 ? 0 : rawTotal;
+  return {
+    sc: finalScore, rawTotal: rawTotal, underMinPost: p < 10,
+    sp: +sp.toFixed(1), sm: +sm.toFixed(1), sv: +sv.toFixed(1), sr: +sr.toFixed(1),
+    ratioPct: +(ratio*100).toFixed(1)
+  };
+}
+
+function calc(p,v,m){ return calcDetails(p,v,m).sc; }
+
+function getRankedList(list){
+  let arr = list.map(b => ({ ...b, ...calcDetails(b.p, b.v, b.m) }));
+  arr.sort((a,b) => (b.sc - a.sc) || (b.m - a.m) || (b.p - a.p));
+  arr.forEach((b, idx) => b.rank = idx + 1);
+  return arr;
+}
+
+function getPreviousWeekMap(){
+  if(!state.history || state.history.length === 0) return {};
+  sortHistoryByDate();
+  let curStartNum = dateToNumber(state.start);
+  let prevWeek = null;
+  for(let i = 0; i < state.history.length; i++){
+    if(dateToNumber(state.history[i].start) < curStartNum){
+      prevWeek = state.history[i];
+    } else { break; }
+  }
+  if(!prevWeek) return {};
+  let rankedPrev = getRankedList(prevWeek.list);
+  let map = {};
+  rankedPrev.forEach(b => { map[b.n.trim()] = b; });
+  return map;
+}
+
+function dbSave(obj){
+  sortHistoryByDate();
+  try{ localStorage.setItem('app_state_v4', JSON.stringify(obj)); }catch(e){}
+  try{
+    let req = indexedDB.open("KarnameDB", 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore("store");
+    req.onsuccess = e => {
+      let tx = e.target.result.transaction("store", "readwrite");
+      tx.objectStore("store").put(obj, "saved");
+    };
+  }catch(e){}
+}
+
+function dbLoad(cb){
+  let ls = localStorage.getItem('app_state_v4') || localStorage.getItem('app_state_v3');
+  if(ls){ try{ state = { ...state, ...JSON.parse(ls) }; }catch(e){} }
+  try{
+    let req = indexedDB.open("KarnameDB", 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore("store");
+    req.onsuccess = e => {
+      let tx = e.target.result.transaction("store", "readonly");
+      let getReq = tx.objectStore("store").get("saved");
+      getReq.onsuccess = () => {
+        if(getReq.result) state = { ...state, ...getReq.result };
+        sortHistoryByDate(); dbSave(state); cb();
+      };
+      getReq.onerror = () => { sortHistoryByDate(); cb(); };
+    };
+    req.onerror = () => { sortHistoryByDate(); cb(); };
+  }catch(e){ sortHistoryByDate(); cb(); }
+}
+
+function switchTab(tabId, btn){
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+  if(tabId === 'tab-single') renderSingleBaseAnalysis();
+  if(tabId === 'tab-compare') renderOverallComparison();
+}
+
+function renderHistorySelector(){
+  sortHistoryByDate();
+  let sel = document.getElementById('historySelect');
+  sel.innerHTML = `<option value="">-- انتخاب هفته از آرشیو (${state.history.length} هفته ثبت‌شده) --</option>`;
+  state.history.forEach((h, idx) => {
+    let isCurrent = (dateToNumber(h.start) === dateToNumber(state.start) && dateToNumber(h.end) === dateToNumber(state.end));
+    sel.innerHTML += `<option value="${idx}" ${isCurrent?'selected':''}>هفته ${idx+1}: (${h.start} تا ${h.end})</option>`;
+  });
+  document.getElementById('archiveCountBadge').innerText = `${state.history.length} هفته در آرشیو`;
+
+  let bSel = document.getElementById('baseSelector');
+  let currentVal = bSel.value;
+  bSel.innerHTML = '';
+  state.list.forEach(b => { bSel.innerHTML += `<option value="${b.n}">${b.n}</option>`; });
+  if(currentVal && state.list.some(x => x.n === currentVal)) bSel.value = currentVal;
+}
+
+function saveCurrentWeekToHistory(){
+  if(!isAdmin) return;
+  let curS = dateToNumber(state.start), curE = dateToNumber(state.end);
+  let idx = state.history.findIndex(h => dateToNumber(h.start) === curS && dateToNumber(h.end) === curE);
+  let snapshot = JSON.parse(JSON.stringify(state.list));
+  if(idx >= 0){
+    state.history[idx].start = state.start; state.history[idx].end = state.end; state.history[idx].list = snapshot;
+    sortHistoryByDate();
+    alert(`✅ آمار هفته (${state.start} تا ${state.end}) بروزرسانی شد!`);
+  } else {
+    state.history.push({ id: Date.now(), start: state.start, end: state.end, list: snapshot });
+    sortHistoryByDate();
+    alert(`✅ هفته جدید (${state.start} تا ${state.end}) به ترتیب تاریخ ثبت شد!`);
+  }
+  saveAll(); renderInputs();
+}
+
+function loadWeekFromHistory(idx){
+  if(idx === "") return;
+  sortHistoryByDate();
+  let h = state.history[+idx];
+  if(!h) return;
+  state.start = h.start; state.end = h.end;
+  state.list = JSON.parse(JSON.stringify(h.list));
+  renderInputs(); run();
+}
+
+function deleteSelectedHistory(){
+  if(!isAdmin) return;
+  let sel = document.getElementById('historySelect');
+  if(sel.value === ""){ alert("ابتدا یک هفته را انتخاب کنید."); return; }
+  if(state.history.length <= 1){ alert("حداقل یک هفته باید باقی بماند."); return; }
+  if(confirm("آیا این هفته حذف شود؟")){
+    state.history.splice(+sel.value, 1);
+    sortHistoryByDate(); saveAll(); renderHistorySelector();
+  }
+}
+
+function resetWeekZeros(){
+  if(!isAdmin) return;
+  if(confirm("پست و بازدید صفر شود؟")){
+    state.list.forEach(b => { b.p = 0; b.v = 0; });
+    renderInputs(); saveAll();
+  }
+}
+
+function renderInputs(){
+  document.getElementById('startD').value = state.start;
+  document.getElementById('endD').value = state.end;
+  if(state.rLogo) document.getElementById('rBox').innerHTML = `<img src="${state.rLogo}">`;
+  if(state.lLogo) document.getElementById('lBox').innerHTML = `<img src="${state.lLogo}">`;
+
+  let prevMap = getPreviousWeekMap();
+  let el = document.getElementById('list'); el.innerHTML = '';
+  state.list.forEach((b,i)=>{
+    let s = calc(b.p,b.v,b.m);
+    let prev = prevMap[b.n.trim()];
+    let deltaTxt = '';
+    if(prev){
+      let diff = s - prev.sc;
+      let col = diff > 0 ? '#4ade80' : diff < 0 ? '#f87171' : '#cbd5e1';
+      let sign = diff > 0 ? `+${diff} ▲` : diff < 0 ? `${diff} ▼` : '۰ ▬';
+      deltaTxt = `<span style="color:${col};font-size:10px;margin-right:4px">(${sign})</span>`;
+    }
+    el.innerHTML += `
+    <div class="card">
+      <div class="card-top">
+        <input type="text" value="${b.n}" oninput="upd(${i},'n',this.value)">
+        <span class="score-badge" id="sc-${i}">نمره: ${s} ${deltaTxt}</span>
+        <button class="btn-del" onclick="openBaseTrend('${b.n}')" style="background:#e0f2fe;color:#0369a1">📈</button>
+        <button class="btn-del" onclick="delRow(${i})">✕</button>
+      </div>
+      <div class="inputs">
+        <div><label>تعداد پست</label><input type="number" inputmode="numeric" value="${b.p}" oninput="upd(${i},'p',this.value)"></div>
+        <div><label>میانگین بازدید</label><input type="number" inputmode="numeric" value="${b.v}" oninput="upd(${i},'v',this.value)"></div>
+        <div><label>اعضا</label><input type="number" inputmode="numeric" value="${b.m}" oninput="upd(${i},'m',this.value)"></div>
+      </div>
+    </div>`;
+  });
+  renderHistorySelector();
+}
+
+function openBaseTrend(baseName){
+  document.getElementById('baseSelector').value = baseName;
+  switchTab('tab-single', document.querySelectorAll('.tab-btn')[1]);
+}
+
+function upd(i,k,v){
+  if(!isAdmin) return;
+  state.list[i][k] = k==='n' ? v : (+v||0);
+  let s = calc(state.list[i].p,state.list[i].v,state.list[i].m);
+  let prevMap = getPreviousWeekMap();
+  let prev = prevMap[state.list[i].n.trim()];
+  let deltaTxt = '';
+  if(prev){
+    let diff = s - prev.sc;
+    let col = diff > 0 ? '#4ade80' : diff < 0 ? '#f87171' : '#cbd5e1';
+    let sign = diff > 0 ? `+${diff} ▲` : diff < 0 ? `${diff} ▼` : '۰ ▬';
+    deltaTxt = `<span style="color:${col};font-size:10px;margin-right:4px">(${sign})</span>`;
+  }
+  document.getElementById(`sc-${i}`).innerHTML = `نمره: ${s} ${deltaTxt}`;
+
+  let curS = dateToNumber(state.start), curE = dateToNumber(state.end);
+  let hIdx = state.history.findIndex(h => dateToNumber(h.start) === curS && dateToNumber(h.end) === curE);
+  if(hIdx >= 0) state.history[hIdx].list = JSON.parse(JSON.stringify(state.list));
+  saveAll();
+}
+
+function addRow(){ if(!isAdmin)return; state.list.push({n:"پایگاه جدید",p:0,v:0,m:0}); renderInputs(); saveAll(); }
+function delRow(i){ if(!isAdmin)return; if(confirm("حذف شود؟")){ state.list.splice(i,1); renderInputs(); saveAll(); } }
+
+function upLogo(ev, key){
+  if(!isAdmin) return;
+  let f = ev.target.files[0]; if(!f) return;
+  let r = new FileReader();
+  r.onload = e => {
+    state[key] = e.target.result;
+    document.getElementById(key==='rLogo'?'rBox':'lBox').innerHTML = `<img src="${state[key]}">`;
+    saveAll();
+  };
+  r.readAsDataURL(f);
+}
+
+function saveAll(){
+  if(!isAdmin) return;
+  state.start = document.getElementById('startD').value;
+  state.end = document.getElementById('endD').value;
+  sortHistoryByDate();
+  dbSave(state);
+  run();
+}
+
+function run(){
+  document.getElementById('subTitle').innerText = `بر اساس هفته نظارت انتخابی (${state.start} تا ${state.end})`;
+  document.getElementById('vStart').innerText = state.start;
+  document.getElementById('vEnd').innerText = state.end;
+
+  let showDelta = document.getElementById('showDeltaChk').checked;
+  let prevMap = getPreviousWeekMap();
+  let sorted = getRankedList(state.list);
+
+  let tb = document.getElementById('tbl'); tb.innerHTML = '';
+  sorted.forEach((b,idx)=>{
+    let st = b.sc>=80 ? `<span class="status st-good">✓ فرماندهی موفق (عالی)</span>` :
+             b.sc>=50 ? `<span class="status st-mid">📈 در حال رشد (متوسط)</span>` :
+             `<span class="status st-bad">! نیاز به تلاش (ضعیف)</span>`;
+    let color = b.sc>=80 ? '#15803d' : b.sc>=50 ? '#b45309' : '#b91c1c';
+
+    let deltaHtml = '';
+    if(showDelta && prevMap[b.n.trim()]){
+      let d = b.sc - prevMap[b.n.trim()].sc;
+      if(d > 0) deltaHtml = `<span style="color:#15803d;font-size:11px;font-weight:900">▲+${d}</span>`;
+      else if(d < 0) deltaHtml = `<span style="color:#b91c1c;font-size:11px;font-weight:900">▼${d}</span>`;
+    }
+
+    let scCell = (b.m>0||b.p>0||b.sc>0) ? `
+      <div class="bar-box">
+        <span>${b.sc}</span>
+        <div class="bar"><div class="fill" style="width:${b.sc}%;background:${color}"></div></div>
+        ${deltaHtml}
+      </div>` : `0`;
+
+    tb.innerHTML += `<tr onclick="openBaseTrend('${b.n}')" style="cursor:pointer" title="مشاهده روند این پایگاه">
+      <td>${b.n}</td><td>${b.p}</td><td>${b.v}</td><td>${b.m ? b.m+' 👥' : 0}</td>
+      <td>${scCell}</td><td>${st}</td><td>${idx+1}</td>
+    </tr>`;
+  });
+}
+
+function renderSingleBaseAnalysis(){
+  sortHistoryByDate();
+  let baseName = document.getElementById('baseSelector').value;
+  if(!baseName) return;
+
+  let timeline = [];
+  state.history.forEach((h, wIdx) => {
+    let ranked = getRankedList(h.list);
+    let found = ranked.find(x => x.n.trim() === baseName.trim());
+    if(found){
+      timeline.push({ startNum: dateToNumber(h.start), weekLabel: `${h.start} تا ${h.end}`, shortLabel: `هفته ${wIdx+1}`, ...found });
+    }
+  });
+
+  let curRanked = getRankedList(state.list);
+  let curBase = curRanked.find(x => x.n.trim() === baseName.trim()) || {n:baseName, p:0, v:0, m:0, ...calcDetails(0,0,0), rank:state.list.length};
+  let curStartNum = dateToNumber(state.start);
+  let existingIdx = timeline.findIndex(t => t.startNum === curStartNum);
+
+  if(existingIdx === -1){
+    timeline.push({ startNum: curStartNum, weekLabel: `${state.start} تا ${state.end}`, shortLabel: `جاری`, ...curBase });
+    timeline.sort((a,b) => a.startNum - b.startNum);
+    timeline.forEach((t, i) => t.shortLabel = `هفته ${i+1}`);
+    existingIdx = timeline.findIndex(t => t.startNum === curStartNum);
+  } else {
+    timeline[existingIdx] = { ...timeline[existingIdx], ...curBase };
+  }
+
+  let curr = timeline[existingIdx];
+  let prev = existingIdx > 0 ? timeline[existingIdx - 1] : null;
+
+  let banner = document.getElementById('singleTrendBanner');
+  let diffSc = prev ? (curr.sc - prev.sc) : 0;
+  let diffRank = prev ? (prev.rank - curr.rank) : 0;
+
+  if(!prev){
+    banner.className = 'trend-banner tb-flat';
+    banner.innerHTML = `<span>📊 وضعیت فعلی: نمره ${curr.sc} (رتبه ${curr.rank})</span><span>اولین هفته ثبت‌شده</span>`;
+  } else if(diffSc >= 10){
+    banner.className = 'trend-banner tb-up';
+    banner.innerHTML = `<span>🚀 جهش و رشد عالی عملکرد (+${diffSc} امتیاز رشد)</span><span>رتبه فعلی: ${curr.rank} (${diffRank>0?diffRank+' پله صعود':diffRank<0?Math.abs(diffRank)+' پله سقوط':'ثابت'})</span>`;
+  } else if(diffSc > 0){
+    banner.className = 'trend-banner tb-up';
+    banner.innerHTML = `<span>📈 روند رو به رشد (+${diffSc} امتیاز نسبت به هفته قبل)</span><span>رتبه فعلی: ${curr.rank}</span>`;
+  } else if(diffSc < 0){
+    banner.className = 'trend-banner tb-down';
+    banner.innerHTML = `<span>📉 افت عملکرد (${diffSc} امتیاز کاهش نسبت به هفته قبل)</span><span>رتبه فعلی: ${curr.rank} (${diffRank<0?Math.abs(diffRank)+' پله سقوط':'ثابت'})</span>`;
+  } else {
+    banner.className = 'trend-banner tb-flat';
+    banner.innerHTML = `<span>⚖️ ثبات نمره عملکرد (نمره: ${curr.sc})</span><span>رتبه فعلی: ${curr.rank}</span>`;
+  }
+
+  let advice = [];
+  if(curr.underMinPost){
+    advice.push(`⚠️ <b>قانون حداقل پست فعال شده است:</b> این پایگاه در این هفته تنها <b>${curr.p} پست</b> منتشر کرده است (کمتر از حد نصاب ۱۰ پست). با رساندن پست‌ها به حداقل ۱۰ عدد، نمره پایگاه بلافاصله از صفر به حدود <b>${curr.rawTotal}</b> افزایش می‌یابد.`);
+  } else {
+    if(curr.p >= 35) advice.push(`✅ <b>تولید محتوا عالی:</b> با انتشار ${curr.p} پست، کامل‌ترین امتیاز بخش پست (۲۰ از ۲۰) کسب شده است.`);
+    else advice.push(`📌 <b>پتانسیل رشد پست:</b> با انتشار ${35 - curr.p} پست بیشتر در هفته، می‌توانید <b>${(20 - curr.sp).toFixed(1)} امتیاز</b> باقی‌مانده بخش فعالیت را دریافت کنید.`);
+    if(curr.v < 100){
+      advice.push(`👁 <b>نقطه تمرکز اصلی (بازدید و تعامل):</b> میانگین بازدید فعلی ${curr.v} است (نرخ تعامل: ${curr.ratioPct}% اعضا). افزایش میانگین بازدید به حدود <b>${Math.min(100, Math.ceil(curr.m*0.35))} بازدید</b>، نمره شما را تا <b>${(25-curr.sv + 25-curr.sr).toFixed(0)} امتیاز</b> ارتقا می‌دهد.`);
+    }
+    if(curr.m < 200){
+      advice.push(`👥 <b>جذب مخاطب:</b> برای کسب نمره کامل اعضا (۳۰ امتیاز)، به جذب <b>${200 - curr.m} عضو جدید</b> نیاز دارید.`);
+    }
+  }
+  if(prev){
+    let vDiff = curr.v - prev.v, pDiff = curr.p - prev.p, mDiff = curr.m - prev.m;
+    advice.push(`🔄 <b>مقایسه با هفته گذشته (${prev.weekLabel}):</b> تعداد پست (${pDiff>=0?'+'+pDiff:pDiff})، میانگین بازدید (${vDiff>=0?'+'+vDiff:vDiff}) و تعداد اعضا (${mDiff>=0?'+'+mDiff:mDiff}) بوده است.`);
+  }
+  document.getElementById('smartAdviceBox').innerHTML = advice.join('<br>');
+
+  function deltaBadge(curVal, prevVal, inverse=false, suffix=''){
+    if(prev === null) return `<span class="kpi-delta d-same">بدون سابقه قبلی</span>`;
+    let d = +(curVal - prevVal).toFixed(1);
+    if(d === 0) return `<span class="kpi-delta d-same">▬ بدون تغییر</span>`;
+    let isGood = inverse ? (d < 0) : (d > 0);
+    let cls = isGood ? 'd-up' : 'd-down';
+    let arrow = d > 0 ? '▲ +' : '▼ ';
+    return `<span class="kpi-delta ${cls}">${arrow}${d}${suffix} نسبت به هفته قبل</span>`;
+  }
+
+  document.getElementById('singleKpiGrid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-title">نمره کل عملکرد (از ۱۰۰)</div><div class="kpi-val">${curr.sc}</div>${deltaBadge(curr.sc, prev?prev.sc:0)}</div>
+    <div class="kpi-card"><div class="kpi-title">رتبه بین ${state.list.length} پایگاه</div><div class="kpi-val">رتبه ${curr.rank}</div>${prev ? (curr.rank < prev.rank ? `<span class="kpi-delta d-up">▲ ${prev.rank - curr.rank} پله صعود</span>` : curr.rank > prev.rank ? `<span class="kpi-delta d-down">▼ ${curr.rank - prev.rank} پله سقوط</span>` : `<span class="kpi-delta d-same">▬ حفظ رتبه ${curr.rank}</span>`) : `<span class="kpi-delta d-same">هفته اول</span>`}</div>
+    <div class="kpi-card"><div class="kpi-title">تعداد پست هفتگی (هدف: ۳۵)</div><div class="kpi-val">${curr.p}</div>${deltaBadge(curr.p, prev?prev.p:0)}</div>
+    <div class="kpi-card"><div class="kpi-title">میانگین بازدید (هدف: ۱۰۰)</div><div class="kpi-val">${curr.v}</div>${deltaBadge(curr.v, prev?prev.v:0)}</div>
+    <div class="kpi-card"><div class="kpi-title">تعداد اعضا (هدف: ۲۰۰)</div><div class="kpi-val">${curr.m}</div>${deltaBadge(curr.m, prev?prev.m:0)}</div>
+    <div class="kpi-card"><div class="kpi-title">نرخ تعامل بازدید به اعضا (هدف: ۳۵٪)</div><div class="kpi-val">${curr.ratioPct}%</div>${deltaBadge(curr.ratioPct, prev?prev.ratioPct:0, false, '%')}</div>
+  `;
+
+  let factors = [
+    { label: "۱. امتیاز تعداد پست (سقف: ۳۵ پست)", val: curr.underMinPost ? 0 : curr.sp, max: 20, col: "#2563eb" },
+    { label: "۲. امتیاز تعداد اعضا (سقف: ۲۰۰ عضو)", val: curr.underMinPost ? 0 : curr.sm, max: 30, col: "#7c3aed" },
+    { label: "۳. امتیاز میانگین بازدید (سقف: ۱۰۰ بازدید)", val: curr.underMinPost ? 0 : curr.sv, max: 25, col: "#059669" },
+    { label: "۴. امتیاز نسبت بازدید به اعضا (سقف: ضریب ۰.۳۵)", val: curr.underMinPost ? 0 : curr.sr, max: 25, col: "#d97706" }
+  ];
+  let fHtml = '';
+  factors.forEach(f => {
+    let pct = Math.min(100, Math.round((f.val / f.max) * 100));
+    fHtml += `<div class="factor-row"><div class="factor-head"><span>${f.label}</span><span style="color:${f.col}">${f.val} از ${f.max} امتیاز (${pct}%)</span></div><div class="factor-track"><div class="factor-fill" style="width:${pct}%;background:${f.col}"></div></div></div>`;
+  });
+  document.getElementById('singleFactorsBox').innerHTML = fHtml;
+
+  let metric = document.getElementById('chartMetricSel').value;
+  let metricNames = { sc:"نمره عملکرد", p:"تعداد پست", v:"میانگین بازدید", m:"تعداد اعضا", ratio:"نرخ تعامل (%)" };
+  let pts = timeline.map(t => metric === 'ratio' ? t.ratioPct : t[metric]);
+  let maxVal = Math.max(...pts, metric==='sc'?100:10, 1);
+  let svgW = 500, svgH = 170, padX = 45, padY = 28;
+  let plotW = svgW - padX*2, plotH = svgH - padY*2;
+
+  let polyPoints = [], circlesHtml = '';
+  timeline.forEach((t, idx) => {
+    let val = pts[idx];
+    let x = timeline.length === 1 ? svgW/2 : padX + (idx / (timeline.length - 1)) * plotW;
+    let y = padY + plotH - (val / maxVal) * plotH;
+    polyPoints.push(`${x},${y}`);
+    circlesHtml += `<circle cx="${x}" cy="${y}" r="5" fill="#dfbe73" stroke="#0d1b30" stroke-width="2"/><text x="${x}" y="${y - 10}" fill="#fde047" font-size="12" font-weight="bold" text-anchor="middle">${val}</text><text x="${x}" y="${svgH - 6}" fill="#cbd5e1" font-size="10" text-anchor="middle">${t.shortLabel}</text>`;
+  });
+
+  document.getElementById('svgChartContainer').innerHTML = `
+    <div style="font-size:12px;color:#dfbe73;font-weight:bold;margin-bottom:6px">روند تقویمی «${metricNames[metric]}» برای ${baseName}</div>
+    <svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%;max-height:190px;overflow:visible">
+      <line x1="${padX}" y1="${padY}" x2="${svgW-padX}" y2="${padY}" stroke="#334155" stroke-dasharray="4"/>
+      <line x1="${padX}" y1="${padY+plotH/2}" x2="${svgW-padX}" y2="${padY+plotH/2}" stroke="#334155" stroke-dasharray="4"/>
+      <line x1="${padX}" y1="${padY+plotH}" x2="${svgW-padX}" y2="${padY+plotH}" stroke="#475569"/>
+      ${timeline.length > 1 ? `<polyline fill="none" stroke="#38bdf8" stroke-width="3" points="${polyPoints.join(' ')}"/>` : ''}
+      ${circlesHtml}
+    </svg>`;
+
+  let hTbl = document.getElementById('singleHistoryTbl'); hTbl.innerHTML = '';
+  timeline.forEach((t, i) => {
+    let dSc = i > 0 ? (t.sc - timeline[i-1].sc) : 0;
+    let dBadge = i === 0 ? '-' : dSc > 0 ? `<span style="color:#15803d">▲ +${dSc}</span>` : dSc < 0 ? `<span style="color:#b91c1c">▼ ${dSc}</span>` : '۰';
+    hTbl.innerHTML += `<tr><td>هفته ${i+1}: (${t.weekLabel})</td><td>${t.p}</td><td>${t.v}</td><td>${t.m}</td><td>${t.ratioPct}%</td><td style="font-weight:900;color:#162a4a">${t.sc}</td><td>${t.rank}</td><td>${dBadge}</td></tr>`;
+  });
+
+  let stBadge = curr.sc>=80 ? `<span class="status st-good" style="font-size:15px;padding:5px 16px">✓ فرماندهی موفق (عالی)</span>` :
+                curr.sc>=50 ? `<span class="status st-mid" style="font-size:15px;padding:5px 16px">📈 در حال رشد (متوسط)</span>` :
+                `<span class="status st-bad" style="font-size:15px;padding:5px 16px">! نیاز به تلاش (ضعیف)</span>`;
+
+  document.getElementById('singleCardFrame').innerHTML = `
+    <div class="rep-header">
+      <div class="logo-box">${state.rLogo ? `<img src="${state.rLogo}">` : 'لوگوی راست'}</div>
+      <div class="rep-center">
+        <h1>کارنامه تحلیلی و پایش روند اختصاصی</h1>
+        <p style="font-size:22px;color:#fff;font-weight:900;margin:6px 0">${baseName}</p>
+        <div class="dates-box"><span>بازه نظارت: ${state.start} الی ${state.end}</span><span>رتبه: ${curr.rank} از ${state.list.length}</span><span>نمره نهایی: ${curr.sc} از ۱۰۰</span></div>
+      </div>
+      <div class="logo-box">${state.lLogo ? `<img src="${state.lLogo}">` : 'لوگوی چپ'}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:14px">
+      <div style="background:#fff;color:#111;padding:14px;border-radius:8px;border:2px solid #c9ad6a"><div style="font-weight:900;font-size:16px;color:#162a4a;border-bottom:2px solid #c9ad6a;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between"><span>ریز امتیازات ۴ شاخص عملکرد</span>${stBadge}</div>${fHtml}</div>
+      <div style="background:#fff;color:#111;padding:14px;border-radius:8px;border:2px solid #c9ad6a"><div style="font-weight:900;font-size:16px;color:#162a4a;border-bottom:2px solid #c9ad6a;padding-bottom:6px;margin-bottom:10px">تحلیل هوشمند و توصیه عملیاتی هفته</div><div style="font-size:14px;line-height:1.9;color:#1e293b;font-weight:700">${advice.join('<br>')}</div></div>
+    </div>
+    <table><thead><tr><th>بازه زمانی نظارت</th><th>❐ تعداد پست</th><th>👁 میانگین بازدید</th><th>👥 تعداد اعضا</th><th>نسبت بازدید به اعضا</th><th>نمره عملکرد</th><th>رتبه هفتگی</th><th>تغییرات نمره</th></tr></thead><tbody>${hTbl.innerHTML}</tbody></table>`;
+}
+
+function renderOverallComparison(){
+  let curRanked = getRankedList(state.list);
+  let prevMap = getPreviousWeekMap();
+  let tbody = document.getElementById('compareAllTbl'); tbody.innerHTML = '';
+  let bestJump = { n:"-", val:-999 }, worstDrop = { n:"-", val:999 }, mostMembers = { n:"-", val:-999 }, topPost = { n:"-", val:-1 };
+
+  curRanked.forEach(b => {
+    if(b.p > topPost.val) topPost = { n:b.n, val:b.p };
+    let prev = prevMap[b.n.trim()];
+    let dSc = prev ? (b.sc - prev.sc) : 0, dP = prev ? (b.p - prev.p) : 0, dV = prev ? (b.v - prev.v) : 0, dM = prev ? (b.m - prev.m) : 0, dR = prev ? (prev.rank - b.rank) : 0;
+    if(prev && dSc > bestJump.val) bestJump = { n:b.n, val:dSc };
+    if(prev && dSc < worstDrop.val) worstDrop = { n:b.n, val:dSc };
+    if(prev && dM > mostMembers.val) mostMembers = { n:b.n, val:dM };
+
+    let fmt = (v, isRank=false) => {
+      if(!prev) return '-';
+      if(v === 0) return '<span style="color:#64748b">۰</span>';
+      return `<span style="color:${v>0?'#15803d':'#b91c1c'};font-weight:900">${v>0?'▲ +':'▼ '}${v}${isRank?' پله':''}</span>`;
+    };
+    tbody.innerHTML += `<tr onclick="openBaseTrend('${b.n}')" style="cursor:pointer"><td style="color:#162a4a;text-decoration:underline">${b.n}</td><td>${prev ? prev.sc : '-'}</td><td style="font-weight:900">${b.sc}</td><td>${fmt(dSc)}</td><td>${fmt(dP)}</td><td>${fmt(dV)}</td><td>${fmt(dM)}</td><td>${fmt(dR, true)}</td></tr>`;
+  });
+
+  document.getElementById('overallHighlights').innerHTML = `
+    <div class="kpi-card"><div class="kpi-title">🚀 بیشترین رشد نمره هفته</div><div class="kpi-val" style="font-size:15px;color:#15803d">${bestJump.val>0 ? `${bestJump.n} (+${bestJump.val})` : 'بدون تغییر مثبت'}</div></div>
+    <div class="kpi-card"><div class="kpi-title">📉 بیشترین افت نمره هفته</div><div class="kpi-val" style="font-size:15px;color:#b91c1c">${worstDrop.val<0 ? `${worstDrop.n} (${worstDrop.val})` : 'بدون افت'}</div></div>
+    <div class="kpi-card"><div class="kpi-title">👥 بیشترین جذب عضو جدید</div><div class="kpi-val" style="font-size:15px;color:#0284c7">${mostMembers.val>0 ? `${mostMembers.n} (+${mostMembers.val} نفر)` : 'ثابت'}</div></div>
+    <div class="kpi-card"><div class="kpi-title">🔥 بیشترین انتشار پست</div><div class="kpi-val" style="font-size:15px;color:#d97706">${topPost.n} (${topPost.val} پست)</div></div>`;
+}
+
+function exportBackup(){
+  sortHistoryByDate();
+  let str = JSON.stringify({start:state.start, end:state.end, list:state.list, history:state.history});
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(str).then(()=>alert("✅ تمام آمارها و تاریخچه هفته‌ها کپی شد!")).catch(()=>prompt("کد زیر را کپی کنید:", str));
+  } else { prompt("کد زیر را کپی کنید:", str); }
+}
+
+function importBackup(){
+  if(!isAdmin) return;
+  let str = prompt("کد پشتیبان کپی‌شده را اینجا Paste کنید:");
+  if(!str) return;
+  try{
+    let obj = JSON.parse(str);
+    if(obj.list){
+      state.start = obj.start; state.end = obj.end; state.list = obj.list;
+      if(obj.history) state.history = obj.history;
+      sortHistoryByDate(); renderInputs(); saveAll(); alert("✅ تمام آمار بازیابی شد!");
+    }
+  }catch(e){ alert("❌ کد نامعتبر است."); }
+}
+
+function makeImg(targetId, btnId){
+  let btn = document.getElementById(btnId);
+  let oldTxt = btn.innerText;
+  btn.innerText = '⏳ در حال ساخت عکس باکیفیت...';
+  html2canvas(document.getElementById(targetId),{scale:2,windowWidth:1200,backgroundColor:'#0d1b30'}).then(c=>{
+    lastCanvas = c;
+    document.getElementById('finalImg').src = c.toDataURL('image/png');
+    document.getElementById('imgModal').style.display = 'block';
+    btn.innerText = oldTxt;
+  });
+}
+
+function shareImg(){
+  if(!lastCanvas) return;
+  lastCanvas.toBlob(blob=>{
+    let file = new File([blob], "karnameh.png", {type:"image/png"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file], title:"کارنامه پایگاه‌ها"}).catch(()=>{});
+    } else {
+      let url = URL.createObjectURL(blob);
+      let a = document.createElement('a'); a.href = url; a.download = "karnameh.png"; a.click();
+    }
+  }, 'image/png');
+}
+
+dbLoad(()=>{ renderInputs(); run(); checkCloudUrlParam(); });
+</script>
+</body>
+</html>
