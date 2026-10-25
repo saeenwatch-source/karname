@@ -117,7 +117,7 @@ body.dark-mode .smart-advice{background:#292211;color:#fde047;border-color:#d977
 </head>
 <body>
 
-<div class="top-bar">
+  <div class="top-bar">
   <div>
     وضعیت: <span id="modeBadge" class="viewer-badge">👁 حالت مشاهده (فقط خواندنی)</span>
   </div>
@@ -338,16 +338,102 @@ body.dark-mode .smart-advice{background:#292211;color:#fde047;border-color:#d977
 const ADMIN_PASS = "1234";
 let isAdmin = false;
 
-  /*__STATE_START__*/
-let defaultState = {"start":"۱۴۰۵/۰۷/۲۵","end":"۱۴۰۵/۰۸/۰۱","rLogo":"","lLogo":"","list":[{"n":"پایگاه سهراب اسماعیلی","p":109,"v":59,"m":200},{"n":"پایگاه صاحب الزمان","p":28,"v":49,"m":439},{"n":"پایگاه ۱۲ ولیعصر","p":21,"v":41,"m":228},{"n":"پایگاه جانبازان","p":37,"v":30,"m":127},{"n":"پایگاه ابوذر","p":16,"v":29,"m":126},{"n":"پایگاه انصارالمهدی","p":14,"v":20,"m":137},{"n":"پایگاه ۱۴ معصوم","p":31,"v":15,"m":92},{"n":"پایگاه امام هادی","p":0,"v":0,"m":151},{"n":"پایگاه اخوان","p":0,"v":0,"m":83},{"n":"پایگاه حضرت علی اصغر","p":0,"v":0,"m":0},{"n":"پایگاه شهدای کردکندی","p":0,"v":0,"m":0},{"n":"پایگاه شهدای سهرین","p":0,"v":0,"m":0},{"n":"پایگاه شهدای ولایت آمادگاه","p":0,"v":0,"m":0},{"n":"پایگاه شهید فروزنده","p":0,"v":0,"m":0}],"history":[{"id":1,"start":"۱۴۰۵/۰۷/۰۴","end":"۱۴۰۵/۰۷/۱۰","list":[{"n":"پایگاه سهراب اسماعیلی","p":35,"v":78,"m":194},{"n":"پایگاه صاحب الزمان","p":110,"v":40,"m":476},{"n":"پایگاه ۱۲ ولیعصر","p":24,"v":64,"m":225},{"n":"پایگاه جانبازان","p":35,"v":43,"m":134},{"n":"پایگاه ابوذر","p":0,"v":0,"m":125},{"n":"پایگاه انصارالمهدی","p":7,"v":25,"m":111},{"n":"پایگاه ۱۴ معصوم","p":2,"v":44,"m":106},{"n":"پایگاه امام هادی","p":1,"v":50,"m":155},{"n":"پایگاه اخوان","p":0,"v":0,"m":83},{"n":"پایگاه حضرت علی اصغر","p":0,"v":0,"m":0},{"n":"پایگاه شهدای کردکندی","p":0,"v":0,"m":0},{"n":"پایگاه شهدای سهرین","p":0,"v":0,"m":0},{"n":"پایگاه شهدای ولایت آمادگاه","p":0,"v":0,"m":0},{"n":"پایگاه شهید فروزنده","p":0,"v":0,"m":0}]},{"id":2,"start":"۱۴۰۵/۰۷/۱۱","end":"۱۴۰۵/۰۷/۱۷","list":[{"n":"پایگاه سهراب اسماعیلی","p":114,"v":52,"m":193},{"n":"پایگاه صاحب الزمان","p":88,"v":55,"m":464},{"n":"پایگاه ۱۲ ولیعصر","p":10,"v":59,"m":212},{"n":"پایگاه جانبازان","p":63,"v":34,"m":132},{"n":"پایگاه ابوذر","p":15,"v":30,"m":133},{"n":"پایگاه انصارالمهدی","p":29,"v":15,"m":143},{"n":"پایگاه ۱۴ معصوم","p":0,"v":0,"m":83},{"n":"پایگاه امام هادی","p":0,"v":0,"m":0},{"n":"پایگاه اخوان","p":0,"v":0,"m":0},{"n":"پایگاه حضرت علی اصغر","p":0,"v":0,"m":0},{"n":"پایگاه شهدای کردکندی","p":0,"v":0,"m":0},{"n":"پایگاه شهدای سهرین","p":0,"v":0,"m":0},{"n":"پایگاه شهدای ولایت آمادگاه","p":0,"v":0,"m":0},{"n":"پایگاه شهید فروزنده","p":0,"v":0,"m":0}]},{"id":1792869573751,"start":"۱۴۰۵/۰۷/۲۵","end":"۱۴۰۵/۰۸/۰۱","list":[{"n":"پایگاه سهراب اسماعیلی","p":109,"v":59,"m":200},{"n":"پایگاه صاحب الزمان","p":28,"v":49,"m":439},{"n":"پایگاه ۱۲ ولیعصر","p":21,"v":41,"m":228},{"n":"پایگاه جانبازان","p":37,"v":30,"m":127},{"n":"پایگاه ابوذر","p":16,"v":29,"m":126},{"n":"پایگاه انصارالمهدی","p":14,"v":20,"m":137},{"n":"پایگاه ۱۴ معصوم","p":31,"v":15,"m":92},{"n":"پایگاه امام هادی","p":0,"v":0,"m":151},{"n":"پایگاه اخوان","p":0,"v":0,"m":83},{"n":"پایگاه حضرت علی اصغر","p":0,"v":0,"m":0},{"n":"پایگاه شهدای کردکندی","p":0,"v":0,"m":0},{"n":"پایگاه شهدای سهرین","p":0,"v":0,"m":0},{"n":"پایگاه شهدای ولایت آمادگاه","p":0,"v":0,"m":0},{"n":"پایگاه شهید فروزنده","p":0,"v":0,"m":0}]}]};
+/*__STATE_START__*/
+let defaultState = {
+  "start": "۱۴۰۵/۰۷/۲۵",
+  "end": "۱۴۰۵/۰۸/۰۱",
+  "rLogo": "",
+  "lLogo": "",
+  "list": [
+    {"n": "پایگاه سهراب اسماعیلی", "p": 109, "v": 59, "m": 200},
+    {"n": "پایگاه صاحب الزمان", "p": 28, "v": 49, "m": 439},
+    {"n": "پایگاه ۱۲ ولیعصر", "p": 21, "v": 41, "m": 228},
+    {"n": "پایگاه جانبازان", "p": 37, "v": 30, "m": 127},
+    {"n": "پایگاه ابوذر", "p": 16, "v": 29, "m": 126},
+    {"n": "پایگاه انصارالمهدی", "p": 14, "v": 20, "m": 137},
+    {"n": "پایگاه ۱۴ معصوم", "p": 31, "v": 15, "m": 92},
+    {"n": "پایگاه امام هادی", "p": 0, "v": 0, "m": 151},
+    {"n": "پایگاه اخوان", "p": 0, "v": 0, "m": 83},
+    {"n": "پایگاه حضرت علی اصغر", "p": 0, "v": 0, "m": 0},
+    {"n": "پایگاه شهدای کردکندی", "p": 0, "v": 0, "m": 0},
+    {"n": "پایگاه شهدای سهرین", "p": 0, "v": 0, "m": 0},
+    {"n": "پایگاه شهدای ولایت آمادگاه", "p": 0, "v": 0, "m": 0},
+    {"n": "پایگاه شهید فروزنده", "p": 0, "v": 0, "m": 0}
+  ],
+  "history": [
+    {
+      "id": 1,
+      "start": "۱۴۰۵/۰۷/۰۴",
+      "end": "۱۴۰۵/۰۷/۱۰",
+      "list": [
+        {"n": "پایگاه سهراب اسماعیلی", "p": 35, "v": 78, "m": 194},
+        {"n": "پایگاه صاحب الزمان", "p": 110, "v": 40, "m": 476},
+        {"n": "پایگاه ۱۲ ولیعصر", "p": 24, "v": 64, "m": 225},
+        {"n": "پایگاه جانبازان", "p": 35, "v": 43, "m": 134},
+        {"n": "پایگاه ابوذر", "p": 0, "v": 0, "m": 125},
+        {"n": "پایگاه انصارالمهدی", "p": 7, "v": 25, "m": 111},
+        {"n": "پایگاه ۱۴ معصوم", "p": 2, "v": 44, "m": 106},
+        {"n": "پایگاه امام هادی", "p": 1, "v": 50, "m": 155},
+        {"n": "پایگاه اخوان", "p": 0, "v": 0, "m": 83},
+        {"n": "پایگاه حضرت علی اصغر", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای کردکندی", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای سهرین", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای ولایت آمادگاه", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهید فروزنده", "p": 0, "v": 0, "m": 0}
+      ]
+    },
+    {
+      "id": 2,
+      "start": "۱۴۰۵/۰۷/۱۱",
+      "end": "۱۴۰۵/۰۷/۱۷",
+      "list": [
+        {"n": "پایگاه سهراب اسماعیلی", "p": 114, "v": 52, "m": 193},
+        {"n": "پایگاه صاحب الزمان", "p": 88, "v": 55, "m": 464},
+        {"n": "پایگاه ۱۲ ولیعصر", "p": 10, "v": 59, "m": 212},
+        {"n": "پایگاه جانبازان", "p": 63, "v": 34, "m": 132},
+        {"n": "پایگاه ابوذر", "p": 15, "v": 30, "m": 133},
+        {"n": "پایگاه انصارالمهدی", "p": 29, "v": 15, "m": 143},
+        {"n": "پایگاه ۱۴ معصوم", "p": 0, "v": 0, "m": 83},
+        {"n": "پایگاه امام هادی", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه اخوان", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه حضرت علی اصغر", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای کردکندی", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای سهرین", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای ولایت آمادگاه", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهید فروزنده", "p": 0, "v": 0, "m": 0}
+      ]
+    },
+    {
+      "id": 3,
+      "start": "۱۴۰۵/۰۷/۲۵",
+      "end": "۱۴۰۵/۰۸/۰۱",
+      "list": [
+        {"n": "پایگاه سهراب اسماعیلی", "p": 109, "v": 59, "m": 200},
+        {"n": "پایگاه صاحب الزمان", "p": 28, "v": 49, "m": 439},
+        {"n": "پایگاه ۱۲ ولیعصر", "p": 21, "v": 41, "m": 228},
+        {"n": "پایگاه جانبازان", "p": 37, "v": 30, "m": 127},
+        {"n": "پایگاه ابوذر", "p": 16, "v": 29, "m": 126},
+        {"n": "پایگاه انصارالمهدی", "p": 14, "v": 20, "m": 137},
+        {"n": "پایگاه ۱۴ معصوم", "p": 31, "v": 15, "m": 92},
+        {"n": "پایگاه امام هادی", "p": 0, "v": 0, "m": 151},
+        {"n": "پایگاه اخوان", "p": 0, "v": 0, "m": 83},
+        {"n": "پایگاه حضرت علی اصغر", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای کردکندی", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای سهرین", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهدای ولایت آمادگاه", "p": 0, "v": 0, "m": 0},
+        {"n": "پایگاه شهید فروزنده", "p": 0, "v": 0, "m": 0}
+      ]
+    }
+  ]
+};
 /*__STATE_END__*/
 
-  let state = JSON.parse(JSON.stringify(defaultState));
+let state = JSON.parse(JSON.stringify(defaultState));
 let lastCanvas = null;
 
 function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
 
-function toggleAdminAuth(){
+  function toggleAdminAuth(){
   if(isAdmin){
     isAdmin = false;
     document.body.classList.remove('is-admin');
@@ -379,7 +465,7 @@ function copyUpdatedHTMLForGithub(){
     list: state.list,
     history: state.history
   };
-  let replacement = "/*__STATE_START__*/\nlet defaultState = " + JSON.stringify(cleanState) + ";\n/*__STATE_END__*/";
+  let replacement = "/*__STATE_START__*/\nlet defaultState = " + JSON.stringify(cleanState, null, 2) + ";\n/*__STATE_END__*/";
   let updatedHTML = currentHTML.replace(/\/\*__STATE_START__\*\/[\s\S]*?\/\*__STATE_END__\*\//, replacement);
   updatedHTML = updatedHTML.replace('class="is-admin"', '').replace('is-admin', '');
 
@@ -443,9 +529,9 @@ function checkHashData(){
     } catch(e){}
   }
   return false;
-  }
+}
 
-  function dateToNumber(str){
+function dateToNumber(str){
   if(!str) return 0;
   let en = String(str)
     .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
@@ -505,7 +591,7 @@ function getPreviousWeekMap(){
 
 function dbSave(obj){
   sortHistoryByDate();
-  try{ localStorage.setItem('app_state_v6', JSON.stringify(obj)); }catch(e){}
+  try{ localStorage.setItem('app_state_v8', JSON.stringify(obj)); }catch(e){}
 }
 
 function mergeStates(codeSt, localSt){
@@ -520,20 +606,26 @@ function mergeStates(codeSt, localSt){
   let res = { ...codeSt, ...localSt, history: mergedHistory };
   res.history.sort((a, b) => dateToNumber(a.start) - dateToNumber(b.start));
   let latest = res.history[res.history.length - 1];
-  if(latest && dateToNumber(latest.start) >= dateToNumber(res.start)){
-    res.start = latest.start; res.end = latest.end; res.list = JSON.parse(JSON.stringify(latest.list));
+  if(latest){
+    res.start = latest.start;
+    res.end = latest.end;
+    res.list = JSON.parse(JSON.stringify(latest.list));
   }
   return res;
 }
 
 function dbLoad(cb){
   if(checkHashData()){ cb(); return; }
-  let ls = localStorage.getItem('app_state_v6') || localStorage.getItem('app_state_v5') || localStorage.getItem('app_state_v4');
+  let ls = localStorage.getItem('app_state_v8') || localStorage.getItem('app_state_v7') || localStorage.getItem('app_state_v6') || localStorage.getItem('app_state_v5');
   if(ls){
     try{
       let parsed = JSON.parse(ls);
       state = mergeStates(defaultState, parsed);
-    }catch(e){}
+    }catch(e){
+      state = JSON.parse(JSON.stringify(defaultState));
+    }
+  } else {
+    state = JSON.parse(JSON.stringify(defaultState));
   }
   sortHistoryByDate();
   dbSave(state);
@@ -547,9 +639,9 @@ function switchTab(tabId, btn){
   btn.classList.add('active');
   if(tabId === 'tab-single') renderSingleBaseAnalysis();
   if(tabId === 'tab-compare') renderOverallComparison();
-  }
+}
 
-  function renderHistorySelector(){
+function renderHistorySelector(){
   sortHistoryByDate();
   let sel = document.getElementById('historySelect');
   sel.innerHTML = `<option value="">-- انتخاب هفته (${state.history.length} هفته در آرشیو) --</option>`;
@@ -564,9 +656,9 @@ function switchTab(tabId, btn){
   bSel.innerHTML = '';
   state.list.forEach(b => { bSel.innerHTML += `<option value="${b.n}">${b.n}</option>`; });
   if(currentVal && state.list.some(x => x.n === currentVal)) bSel.value = currentVal;
-}
+  }
 
-function saveCurrentWeekToHistory(){
+  function saveCurrentWeekToHistory(){
   if(!isAdmin) return;
   let curS = dateToNumber(state.start), curE = dateToNumber(state.end);
   let idx = state.history.findIndex(h => dateToNumber(h.start) === curS && dateToNumber(h.end) === curE);
